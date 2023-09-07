@@ -14,7 +14,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@cocktails-rolodex/data-drinks": ["libs/data-drinks/src/index.ts"],
+      "@cocktails-rolodex/data-ingredients": [
+        "libs/data-ingredients/src/index.ts"
+      ],
+      "@cocktails-rolodex/data-users": ["libs/data-users/src/index.ts"],
+      "@cocktails-rolodex/prisma-client": ["libs/prisma-client/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
