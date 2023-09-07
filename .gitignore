@@ -6,6 +6,7 @@ tmp
 /out-tsc
 
 # dependencies
+.env
 node_modules
 
 # IDEs and editors
