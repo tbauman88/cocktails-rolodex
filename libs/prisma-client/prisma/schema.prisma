@@ -1,0 +1,70 @@
+// This is your Prisma schema file, learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  drinks    Drink[]
+  account   Account?
+  role      Role?     @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt()
+  deletedAt DateTime?
+}
+
+model Account {
+  id     String @id @default(uuid())
+  bio    String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model Drink {
+  id          String              @id @default(uuid())
+  name        String
+  notes       String?
+  published   Boolean?            @default(false)
+  saveCount   Int                 @default(0)
+  user        User                @relation(fields: [userId], references: [id])
+  userId      String
+  serves      Int?                @default(1)
+  directions  String?
+  ingredients IngredientOnDrink[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt()
+  deletedAt   DateTime?
+}
+
+model Ingredient {
+  id        String              @id @default(uuid())
+  name      String              @unique
+  drinks    IngredientOnDrink[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model IngredientOnDrink {
+  id           String     @id @default(uuid())
+  drink        Drink      @relation(fields: [drinkId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  amount       String     @db.Text
+  amount_unit  String?    @db.Text
+  brand        String?
+  garnish      Boolean?   @default(false)
+  drinkId      String
+  ingredientId String
+}
+
+enum Role {
+  USER
+  ADMIN
+}
