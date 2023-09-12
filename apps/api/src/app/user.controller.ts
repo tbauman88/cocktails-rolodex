@@ -12,7 +12,7 @@ import {
   Query
 } from '@nestjs/common'
 import { UserService } from '@cocktails-rolodex/data-users'
-import { Prisma, User } from '@cocktails-rolodex/prisma-client'
+import { Prisma, User } from '@cocktails-rolodex/prisma-client-cocktails'
 
 @Controller()
 export class UserController {

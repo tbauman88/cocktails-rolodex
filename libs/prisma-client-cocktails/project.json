@@ -1,45 +1,39 @@
 {
-  "name": "prisma-client",
+  "name": "prisma-client-cocktails",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/prisma-client/src",
+  "sourceRoot": "libs/prisma-client-cocktails/src",
   "projectType": "library",
   "targets": {
     "prisma": {
       "command": "prisma",
       "options": {
-        "cwd": "libs/prisma-client"
+        "cwd": "libs/prisma-client-cocktails"
       }
     },
     "generate-types": {
       "command": "prisma generate",
       "options": {
-        "cwd": "libs/prisma-client"
+        "cwd": "libs/prisma-client-cocktails"
       }
     },
     "migrate": {
       "command": "prisma migrate dev",
       "options": {
-        "cwd": "libs/prisma-client"
+        "cwd": "libs/prisma-client-cocktails"
       }
     },
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "libs/prisma-client/**/*.ts"
-        ]
+        "lintFilePatterns": ["libs/prisma-client-cocktails/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/prisma-client/jest.config.ts",
+        "jestConfig": "libs/prisma-client-cocktails/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

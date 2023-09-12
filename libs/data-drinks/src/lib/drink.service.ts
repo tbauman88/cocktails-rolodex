@@ -1,5 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Prisma, PrismaService, Drink } from '@cocktails-rolodex/prisma-client'
+import {
+  Prisma,
+  PrismaService,
+  Drink
+} from '@cocktails-rolodex/prisma-client-cocktails'
 
 export type DrinkWithIngredients = Drink & {
   ingredients: {

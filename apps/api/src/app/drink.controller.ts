@@ -10,7 +10,7 @@ import {
   Query
 } from '@nestjs/common'
 import { CreateDrinkDto, DrinkService } from '@cocktails-rolodex/data-drinks'
-import { Drink, Prisma } from '@cocktails-rolodex/prisma-client'
+import { Drink, Prisma } from '@cocktails-rolodex/prisma-client-cocktails'
 
 @Controller()
 export class DrinkController {

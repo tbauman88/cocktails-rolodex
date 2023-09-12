@@ -3,7 +3,7 @@ import {
   Prisma,
   PrismaService,
   Ingredient
-} from '@cocktails-rolodex/prisma-client'
+} from '@cocktails-rolodex/prisma-client-cocktails'
 
 type IngredientWithDrinks = Ingredient & {
   drinks: { id: string; name: string }[]

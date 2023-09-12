@@ -20,7 +20,9 @@
         "libs/data-ingredients/src/index.ts"
       ],
       "@cocktails-rolodex/data-users": ["libs/data-users/src/index.ts"],
-      "@cocktails-rolodex/prisma-client": ["libs/prisma-client/src/index.ts"]
+      "@cocktails-rolodex/prisma-client-cocktails": [
+        "libs/prisma-client-cocktails/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,5 +1,9 @@
 import { Body, Injectable, NotFoundException } from '@nestjs/common'
-import { Prisma, PrismaService, User } from '@cocktails-rolodex/prisma-client'
+import {
+  Prisma,
+  PrismaService,
+  User
+} from '@cocktails-rolodex/prisma-client-cocktails'
 
 @Injectable()
 export class UserService {
