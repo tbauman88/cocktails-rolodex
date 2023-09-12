@@ -1,5 +1,9 @@
 # CocktailsRolodex
 
+## Docker
+
+Run `npm run docker:start` to build your api project and start your docker container. 
+
 ## Development server
 
 Run `nx serve cocktails` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.

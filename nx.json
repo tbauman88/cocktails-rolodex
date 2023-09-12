@@ -10,7 +10,7 @@
           "test",
           "e2e"
         ],
-        "accessToken": "OGE2NTdhNWMtNmMwOC00OGI4LWFiMjEtN2I3YzUyMzA3MDljfHJlYWQtd3JpdGU="
+        "accessToken": "ZmNmNDk0NWEtZDAwMi00ODc5LWIzNTItYWZjZDNiMzQ2MzAyfHJlYWQtd3JpdGU="
       }
     }
   },
@@ -76,6 +76,9 @@
         "style": "styled-jsx",
         "linter": "eslint"
       }
+    },
+    "@nx/js:library": {
+      "buildable": true
     }
   }
 }

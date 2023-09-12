@@ -6,8 +6,7 @@
     "start:api": "npx nx serve api",
     "start:client": "npx nx serve client",
     "build:api": "npx nx docker-build api",
-    "build:client": "npx nx docker-build client",
-    "start:migrate:prod": "nx run prisma-client-one:prisma migrate deploy && node api"
+    "docker:start": "npm run build:api && docker-compose up -d"
   },
   "private": true,
   "dependencies": {

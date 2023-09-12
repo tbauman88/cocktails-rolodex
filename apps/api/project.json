@@ -3,9 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api/src",
   "projectType": "application",
+  "implicitDependencies": [
+    "prisma-client-cocktails",
+    "data-*"
+  ],
   "targets": {
     "build": {
-      "projects": "dependencies",
       "executor": "@nx/webpack:webpack",
       "outputs": [
         "{options.outputPath}"
@@ -21,7 +24,8 @@
           "apps/api/src/assets"
         ],
         "isolatedConfig": true,
-        "webpackConfig": "apps/api/webpack.config.js"
+        "webpackConfig": "apps/api/webpack.config.js",
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {},

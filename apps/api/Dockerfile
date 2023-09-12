@@ -1,15 +1,19 @@
-FROM node:20.0.0-alpine
-
-RUN apk add --no-cache libc6-compat
+FROM docker.io/node:lts-alpine
 
 WORKDIR /app
 
-COPY dist/apps/api api
-
 RUN addgroup --system api && adduser --system -G api api
+
+COPY dist/apps/api api
+COPY libs/prisma-client-cocktails/prisma/ api/prisma/
+
 RUN chown -R api:api .
 
-USER api
+RUN npm --prefix api --omit=dev -f install
 
-EXPOSE 3333
-CMD ["node", "api"]
+WORKDIR /app/api
+RUN npx prisma generate --schema=/app/api/prisma/schema.prisma
+
+EXPOSE 3000
+
+CMD npx prisma migrate deploy && cd ../ && node api

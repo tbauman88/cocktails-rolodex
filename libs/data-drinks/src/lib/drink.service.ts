@@ -108,6 +108,8 @@ export class DrinkService {
   async create(data: CreateDrinkDto): Promise<Drink> {
     const { userId, name, directions, serves, notes, ingredients } = data
 
+    await this.prisma.user.findUniqueOrThrow({ where: { id: userId } })
+
     return await this.prisma.drink.create({
       data: {
         name,
@@ -138,6 +140,10 @@ export class DrinkService {
   async delete(where: Prisma.DrinkWhereUniqueInput): Promise<string> {
     const drink = await this.prisma.drink.findUnique({ where })
 
+    if (!drink) {
+      return `Drink with ID ${where.id} not found.`
+    }
+
     if (drink.deletedAt != null) return `${drink.name} has been deleted.`
 
     await this.prisma.drink.update({
@@ -152,19 +158,18 @@ export class DrinkService {
     ingredients: Ingredient[]
   ): Promise<Prisma.IngredientOnDrinkCreateWithoutDrinkInput[]> {
     return await Promise.all(
-      ingredients.map(async (ingredient) => {
-        const { id } = await this.prisma.ingredient.upsert({
-          where: { name: ingredient.name },
-          create: { name: ingredient.name },
-          update: {}
-        })
-
+      ingredients.map(async (i: Ingredient) => {
         return {
-          amount: ingredient.amount,
-          amount_unit: ingredient.amount_unit || null,
-          brand: ingredient.brand || null,
-          garnish: ingredient.garnish || false,
-          ingredient: { connect: { id } }
+          ingredient: {
+            connectOrCreate: {
+              where: { name: i.name },
+              create: { name: i.name }
+            }
+          },
+          amount: i.amount,
+          ...(i.amount_unit && { amount_unit: i.amount_unit }),
+          ...(i.brand && { brand: i.brand }),
+          ...(i.garnish && { garnish: i.garnish })
         }
       })
     )

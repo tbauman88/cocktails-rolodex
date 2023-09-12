@@ -10,7 +10,7 @@
         "cwd": "libs/prisma-client-cocktails"
       }
     },
-    "generate-types": {
+    "generate:types": {
       "command": "prisma generate",
       "options": {
         "cwd": "libs/prisma-client-cocktails"
@@ -22,16 +22,28 @@
         "cwd": "libs/prisma-client-cocktails"
       }
     },
+    "migrate:reset": {
+      "command": "prisma migrate reset --force",
+      "options": {
+        "cwd": "libs/prisma-client-cocktails"
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/prisma-client-cocktails/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/prisma-client-cocktails/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "libs/prisma-client-cocktails/jest.config.ts",
         "passWithNoTests": true
