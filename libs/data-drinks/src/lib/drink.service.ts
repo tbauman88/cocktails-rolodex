@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  Body,
+  ConflictException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import {
   Prisma,
   PrismaService,
@@ -105,10 +110,32 @@ export class DrinkService {
     }
   }
 
-  async create(data: CreateDrinkDto): Promise<Drink> {
+  async create(
+    @Body() data: CreateDrinkDto
+  ): Promise<Drink | ConflictException> {
     const { userId, name, directions, serves, notes, ingredients } = data
 
-    await this.prisma.user.findUniqueOrThrow({ where: { id: userId } })
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      include: {
+        drinks: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    })
+
+    const existingDrink = await this.prisma.drink.findFirst({
+      where: { user: { id: user.id }, name }
+    })
+
+    if (existingDrink) {
+      throw new ConflictException(
+        `${user.name} already has a drink called ${existingDrink.name}.`
+      )
+    }
 
     return await this.prisma.drink.create({
       data: {
@@ -116,7 +143,7 @@ export class DrinkService {
         directions,
         serves,
         notes,
-        user: { connect: { id: userId } },
+        user: { connect: { id: user.id } },
         ingredients: {
           create: await this.upsertIngredients(ingredients)
         }
@@ -125,31 +152,28 @@ export class DrinkService {
     })
   }
 
-  async update(params: {
+  async update({
+    where,
+    data
+  }: {
     where: Prisma.DrinkWhereUniqueInput
     data: Prisma.DrinkUpdateInput
   }): Promise<Drink> {
-    const { where, data } = params
-    return this.prisma.drink.update({
-      where,
-      data,
-      include: { ingredients: true }
-    })
+    if (!(await this.prisma.drink.findUnique({ where }))) {
+      throw new NotFoundException(`Drink with ID: ${where.id} not found.`)
+    }
+
+    return this.prisma.drink.update({ where, data })
   }
 
   async delete(where: Prisma.DrinkWhereUniqueInput): Promise<string> {
     const drink = await this.prisma.drink.findUnique({ where })
 
-    if (!drink) {
-      return `Drink with ID ${where.id} not found.`
-    }
+    if (!drink) return `Drink with ID ${where.id} not found.`
 
-    if (drink.deletedAt != null) return `${drink.name} has been deleted.`
+    if (drink.deletedAt) return `${drink.name} has been deleted.`
 
-    await this.prisma.drink.update({
-      where,
-      data: { deletedAt: new Date() }
-    })
+    await this.prisma.drink.update({ where, data: { deletedAt: new Date() } })
 
     return 'Drink deleted successfully.'
   }

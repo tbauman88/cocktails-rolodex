@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -41,7 +42,9 @@ export class DrinkController {
   }
 
   @Post('drink')
-  async createDrink(@Body() data: CreateDrinkDto): Promise<Drink> {
+  async createDrink(
+    @Body() data: CreateDrinkDto
+  ): Promise<Drink | ConflictException> {
     return this.drinkService.create(data)
   }
 
