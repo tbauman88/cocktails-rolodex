@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -23,21 +24,20 @@ export class UserController {
   async getUsers(
     @Query('orderBy') orderBy?: 'asc' | 'desc'
   ): Promise<User[] | null> {
-    return this.userService.index({
-      include: { drinks: true },
-      orderBy: { name: orderBy }
-    })
+    return this.userService.index({ orderBy: { name: orderBy } })
   }
 
   @Get('user/:id')
-  async getUserById(@Param('id') id: string): Promise<User | null> {
+  async getUserById(
+    @Param('id') id: string
+  ): Promise<User | NotFoundException> {
     return this.userService.show({ id })
   }
 
   @Post('user/signup')
   async createUser(
     @Body() data: Prisma.UserCreateInput
-  ): Promise<User | string> {
+  ): Promise<User | ConflictException> {
     return this.userService.create(data)
   }
 
