@@ -21,6 +21,20 @@ services:
     networks:
       - cocktails
 
+  db_test:
+    image: postgres:13
+    container_name: cocktails-db-testing
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: cocktails-test
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres_db_test:/var/lib/postgresql/data
+    networks:
+      - cocktails
+
   api:
     image: api
     environment:
@@ -39,3 +53,4 @@ networks:
 
 volumes:
   postgres:
+  postgres_db_test:
