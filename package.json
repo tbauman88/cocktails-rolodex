@@ -6,7 +6,8 @@
     "start:api": "npx nx serve api",
     "start:client": "npx nx serve client",
     "build:api": "npx nx docker-build api",
-    "docker:start": "npm run build:api && docker-compose up -d"
+    "docker:start": "npm run build:api && docker-compose up -d",
+    "start:test": "dotenv -e .env.test -- nx run prisma-client-cocktails:migrate"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +26,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
     "@nx/cypress": "16.7.4",
@@ -50,7 +52,11 @@
     "@vitejs/plugin-react": "~4.0.0",
     "@vitest/coverage-c8": "~0.32.0",
     "@vitest/ui": "~0.32.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "cypress": "^12.16.0",
+    "dotenv": "^16.3.1",
+    "dotenv-cli": "^7.3.0",
     "eslint": "~8.46.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.13.4",
