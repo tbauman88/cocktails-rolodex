@@ -8,8 +8,10 @@
           "build",
           "lint",
           "test",
-          "e2e"
+          "e2e",
+          "docker-build"
         ],
+        "parallel": 1,
         "accessToken": "ZmNmNDk0NWEtZDAwMi00ODc5LWIzNTItYWZjZDNiMzQ2MzAyfHJlYWQtd3JpdGU="
       }
     }

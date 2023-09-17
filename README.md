@@ -1,5 +1,8 @@
 # CocktailsRolodex
 
+[![CI](https://github.com/tbauman88/cocktails-rolodex/actions/workflows/ci.yml/badge.svg)](https://github.com/tbauman88/cocktails-rolodex/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/tbauman88/cocktails-rolodex/branch/main/graph/badge.svg?token=2WZ27315F6)](https://codecov.io/gh/tbauman88/cocktails-rolodex)
+
 ## Docker
 
 Run `npm run docker:start` to build your api project and start your docker container. 
