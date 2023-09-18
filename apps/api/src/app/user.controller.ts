@@ -12,49 +12,58 @@ import {
   Put,
   Query
 } from '@nestjs/common'
+
 import { UserService } from '@cocktails-rolodex/data-users'
 import { Prisma, User } from '@cocktails-rolodex/prisma-client-cocktails'
 
-@Controller()
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('users')
+  @Get()
   @HttpCode(HttpStatus.OK)
-  async getUsers(
+  async findAll(
     @Query('orderBy') orderBy?: 'asc' | 'desc'
   ): Promise<User[] | null> {
     return this.userService.index({ orderBy: { name: orderBy } })
   }
 
-  @Get('user/:id')
-  async getUserById(
-    @Param('id') id: string
-  ): Promise<User | NotFoundException> {
-    return this.userService.show({ id })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<User> {
+    try {
+      return await this.userService.show({ id })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 
-  @Post('user/signup')
-  async createUser(
-    @Body() data: Prisma.UserCreateInput
-  ): Promise<User | ConflictException> {
-    return this.userService.create(data)
+  @Post('signup')
+  async create(@Body() data: Prisma.UserCreateInput): Promise<User> {
+    try {
+      return await this.userService.create(data)
+    } catch (error) {
+      throw new ConflictException(error.message)
+    }
   }
 
-  @Put('user/:id')
-  async updateUser(
+  @Put(':id')
+  async update(
     @Param('id') id: string,
     @Body() data: Prisma.UserUpdateInput
   ): Promise<User | NotFoundException> {
-    return this.userService.update({ where: { id }, data })
+    try {
+      return await this.userService.update({ where: { id }, data })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 
-  @Delete('user/:id')
-  async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
-    const deleted = this.userService.delete({ id })
-
-    if (deleted) {
-      return { message: `User: ${id} was deleted successfully` }
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<{ message: string }> {
+    try {
+      return await this.userService.delete({ id })
+    } catch (error) {
+      throw new NotFoundException(error.message)
     }
   }
 }

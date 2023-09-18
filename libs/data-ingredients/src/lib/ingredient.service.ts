@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import {
   Prisma,
   PrismaService,
@@ -19,7 +19,7 @@ export class IngredientService {
     cursor?: Prisma.IngredientWhereUniqueInput
     where?: Prisma.IngredientWhereInput
     orderBy?: Prisma.IngredientOrderByWithRelationInput
-  }): Promise<Ingredient[] | null> {
+  }): Promise<Ingredient[]> {
     const { skip, take, cursor, where, orderBy } = params
     const ingredients = await this.prisma.ingredient.findMany({
       skip,
@@ -46,7 +46,7 @@ export class IngredientService {
 
   async show(
     ingredientWhereUniqueInput: Prisma.IngredientWhereUniqueInput
-  ): Promise<IngredientWithDrinks | null> {
+  ): Promise<IngredientWithDrinks> {
     const ingredient = await this.prisma.ingredient.findUnique({
       where: ingredientWhereUniqueInput,
       include: {
@@ -58,7 +58,7 @@ export class IngredientService {
     })
 
     if (!ingredient) {
-      throw new NotFoundException(
+      throw new Error(
         `Ingredient with ID ${ingredientWhereUniqueInput.id} not found.`
       )
     }

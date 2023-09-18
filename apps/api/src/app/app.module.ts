@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 
 import { AppController } from './app.controller'
 import { UserController } from './user.controller'
@@ -10,7 +11,15 @@ import { DataDrinksModule } from '@cocktails-rolodex/data-drinks'
 import { DataIngredientsModule } from '@cocktails-rolodex/data-ingredients'
 
 @Module({
-  imports: [DataUsersModule, DataDrinksModule, DataIngredientsModule],
+  imports: [
+    DataUsersModule,
+    DataDrinksModule,
+    DataIngredientsModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+    })
+  ],
   controllers: [
     AppController,
     UserController,

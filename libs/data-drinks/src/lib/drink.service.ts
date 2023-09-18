@@ -1,9 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import {
   Prisma,
   PrismaService,
@@ -81,16 +76,14 @@ export class DrinkService {
 
   async show(
     drinkWhereUniqueInput: Prisma.DrinkWhereUniqueInput
-  ): Promise<DrinkWithIngredients | NotFoundException | string> {
+  ): Promise<DrinkWithIngredients | string> {
     const drink = await this.prisma.drink.findUnique({
       where: drinkWhereUniqueInput,
       include: this.includeIngredients
     })
 
     if (!drink) {
-      throw new NotFoundException(
-        `Drink with ID ${drinkWhereUniqueInput.id} not found.`
-      )
+      throw new Error(`Drink with ID ${drinkWhereUniqueInput.id} not found.`)
     }
 
     if (drink.deletedAt != null) return `${drink.name} has been deleted.`
@@ -110,9 +103,7 @@ export class DrinkService {
     }
   }
 
-  async create(
-    @Body() data: CreateDrinkDto
-  ): Promise<Drink | ConflictException> {
+  async create(data: CreateDrinkDto): Promise<Drink> {
     const { userId, name, directions, serves, notes, ingredients } = data
 
     const user = await this.prisma.user.findUniqueOrThrow({
@@ -132,7 +123,7 @@ export class DrinkService {
     })
 
     if (existingDrink) {
-      throw new ConflictException(
+      throw new Error(
         `${user.name} already has a drink called ${existingDrink.name}.`
       )
     }
@@ -160,7 +151,7 @@ export class DrinkService {
     data: Prisma.DrinkUpdateInput
   }): Promise<Drink> {
     if (!(await this.prisma.drink.findUnique({ where }))) {
-      throw new NotFoundException(`Drink with ID: ${where.id} not found.`)
+      throw new Error(`Drink with ID: ${where.id} not found.`)
     }
 
     return this.prisma.drink.update({ where, data })
@@ -169,7 +160,7 @@ export class DrinkService {
   async delete(where: Prisma.DrinkWhereUniqueInput): Promise<string> {
     const drink = await this.prisma.drink.findUnique({ where })
 
-    if (!drink) return `Drink with ID ${where.id} not found.`
+    if (!drink) throw new Error(`Drink with ID ${where.id} not found.`)
 
     if (drink.deletedAt) return `${drink.name} has been deleted.`
 

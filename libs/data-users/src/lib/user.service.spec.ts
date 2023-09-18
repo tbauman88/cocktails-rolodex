@@ -1,7 +1,5 @@
 import { faker } from '@faker-js/faker'
 import { Test, TestingModule } from '@nestjs/testing'
-import { User } from '@prisma/client'
-import { PrismaService } from '@cocktails-rolodex/prisma-client-cocktails'
 import { UserService } from './user.service'
 import {
   INestApplication,
@@ -11,6 +9,8 @@ import {
 import { DataUsersModule } from './data-users.module'
 import { useContainer } from 'class-validator'
 import { config } from 'dotenv'
+
+import { PrismaService, User } from '@cocktails-rolodex/prisma-client-cocktails'
 
 config({ path: '.env.test' })
 
@@ -36,7 +36,6 @@ describe('UserService', () => {
 
   afterAll(async () => {
     prisma.$disconnect()
-
     await app.close()
   })
 
@@ -45,28 +44,6 @@ describe('UserService', () => {
     const deleteUsers = prisma.user.deleteMany()
 
     await prisma.$transaction([deleteDrinks, deleteUsers])
-  })
-
-  describe('show', () => {
-    it('should return a user with drinks', async () => {
-      const user: User = await prisma.user.create({
-        data: {
-          name: faker.person.fullName(),
-          email: faker.internet.exampleEmail()
-        }
-      })
-
-      expect(await service.show({ id: user.id })).toEqual({
-        ...user,
-        drinks: []
-      })
-    })
-
-    it('should return null if user is not found', async () => {
-      await expect(service.show({ id: '1' })).rejects.toThrow(
-        new NotFoundException('Drink with ID 1 not found.')
-      )
-    })
   })
 
   describe('index', () => {
@@ -102,6 +79,28 @@ describe('UserService', () => {
       const users: User[] = await createManyUsers()
 
       expect(await service.index({ include: { drinks: true } })).toEqual(users)
+    })
+  })
+
+  describe('show', () => {
+    it('should return a user with drinks', async () => {
+      const user: User = await prisma.user.create({
+        data: {
+          name: faker.person.fullName(),
+          email: faker.internet.exampleEmail()
+        }
+      })
+
+      expect(await service.show({ id: user.id })).toEqual({
+        ...user,
+        drinks: []
+      })
+    })
+
+    it('should return null if user is not found', async () => {
+      await expect(service.show({ id: '1' })).rejects.toThrow(
+        new NotFoundException('Drink with ID 1 not found.')
+      )
     })
   })
 })

@@ -10,15 +10,16 @@ import {
   Put,
   Query
 } from '@nestjs/common'
+
 import { CreateDrinkDto, DrinkService } from '@cocktails-rolodex/data-drinks'
 import { Drink, Prisma } from '@cocktails-rolodex/prisma-client-cocktails'
 
-@Controller()
+@Controller('drinks')
 export class DrinkController {
   constructor(private readonly drinkService: DrinkService) {}
 
-  @Get('drinks')
-  async drinks(
+  @Get()
+  async findAll(
     @Query('take') take?: number,
     @Query('skip') skip?: number,
     @Query('search') search?: string,
@@ -34,30 +35,42 @@ export class DrinkController {
     })
   }
 
-  @Get('drink/:id')
-  async getDrinkById(
-    @Param('id') id: string
-  ): Promise<Drink | NotFoundException | string> {
-    return this.drinkService.show({ id })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Drink | string> {
+    try {
+      return await this.drinkService.show({ id })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 
-  @Post('drink')
-  async createDrink(
-    @Body() data: CreateDrinkDto
-  ): Promise<Drink | ConflictException> {
-    return this.drinkService.create(data)
+  @Post()
+  async create(@Body() data: CreateDrinkDto): Promise<Drink> {
+    try {
+      return await this.drinkService.create(data)
+    } catch (error) {
+      throw new ConflictException(error.message)
+    }
   }
 
-  @Put('drink/:id')
-  async updateDrink(
+  @Put(':id')
+  async update(
     @Param('id') id: string,
     @Body() data: Prisma.DrinkUpdateInput
   ): Promise<Drink> {
-    return this.drinkService.update({ where: { id }, data })
+    try {
+      return await this.drinkService.update({ where: { id }, data })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 
-  @Delete('drink/:id')
-  async deleteDrink(@Param('id') id: string): Promise<string> {
-    return this.drinkService.delete({ id })
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<string> {
+    try {
+      return await this.drinkService.delete({ id })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 }

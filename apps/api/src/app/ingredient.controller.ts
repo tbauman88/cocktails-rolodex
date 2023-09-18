@@ -1,13 +1,20 @@
-import { Controller, Get, Param, Query } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query
+} from '@nestjs/common'
+
 import { IngredientService } from '@cocktails-rolodex/data-ingredients'
 import { Ingredient } from '@cocktails-rolodex/prisma-client-cocktails'
 
-@Controller()
+@Controller('ingredients')
 export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
-  @Get('ingredients')
-  async ingredients(
+  @Get()
+  async findAll(
     @Query('take') take?: number,
     @Query('skip') skip?: number,
     @Query('search') search?: string,
@@ -23,8 +30,12 @@ export class IngredientController {
     })
   }
 
-  @Get('ingredient/:id')
-  async ingredient(@Param('id') id: string): Promise<Ingredient | null> {
-    return this.ingredientService.show({ id })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Ingredient | null> {
+    try {
+      return await this.ingredientService.show({ id })
+    } catch (error) {
+      throw new NotFoundException(error.message)
+    }
   }
 }

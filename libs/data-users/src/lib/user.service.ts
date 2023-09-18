@@ -1,9 +1,4 @@
-import {
-  Body,
-  ConflictException,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
+import { Body, Injectable } from '@nestjs/common'
 import {
   Prisma,
   PrismaService,
@@ -42,34 +37,26 @@ export class UserService {
     })
   }
 
-  async show(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput
-  ): Promise<User | NotFoundException> {
+  async show(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
       include: this.includeDrinks
     })
 
     if (!user) {
-      throw new NotFoundException(
-        `Drink with ID ${userWhereUniqueInput.id} not found.`
-      )
+      throw new Error(`Drink with ID ${userWhereUniqueInput.id} not found.`)
     }
 
     return user
   }
 
-  async create(
-    @Body() data: Prisma.UserCreateInput
-  ): Promise<User | ConflictException> {
+  async create(@Body() data: Prisma.UserCreateInput): Promise<User> {
     const existingUser = await this.prisma.user.findFirst({
       where: { email: data.email, name: data.name }
     })
 
     if (existingUser) {
-      throw new ConflictException(
-        'User with provided email and name already exists.'
-      )
+      throw new Error('User with provided email and name already exists.')
     }
 
     return this.prisma.user.create({ data })
@@ -81,23 +68,24 @@ export class UserService {
   }: {
     where: Prisma.UserWhereUniqueInput
     data: Prisma.UserUpdateInput
-  }): Promise<User | NotFoundException> {
+  }): Promise<User> {
     if (!(await this.prisma.user.findUnique({ where }))) {
-      throw new NotFoundException(`User with ID ${where.id} not found.`)
+      throw new Error(`User with ID ${where.id} not found.`)
     }
 
     return this.prisma.user.update({ data, where })
   }
 
-  async delete(where: Prisma.UserWhereUniqueInput): Promise<string> {
+  async delete(
+    where: Prisma.UserWhereUniqueInput
+  ): Promise<{ message: string }> {
     const user = await this.prisma.user.findUnique({ where })
 
-    if (!user) return `User with ID ${where.id} not found.`
+    if (!user) throw new Error(`User with ID ${where.id} not found.`)
 
-    if (user.deletedAt) return `${user.name} has been deleted.`
+    if (user.deletedAt) return { message: `${user.name} has been deleted.` }
 
     await this.prisma.user.update({ where, data: { deletedAt: new Date() } })
-
-    return `User: ${user.name} deleted successfully.`
+    return { message: `User: ${user.name} deleted successfully.` }
   }
 }

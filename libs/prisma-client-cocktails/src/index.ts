@@ -5,5 +5,6 @@ export {
   User,
   Drink,
   Ingredient,
-  Account
+  Account,
+  Role
 } from '@prisma/client/cocktails'
