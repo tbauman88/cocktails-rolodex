@@ -7,7 +7,6 @@ tmp
 
 # dependencies
 .env
-.env.test
 node_modules
 
 # IDEs and editors
