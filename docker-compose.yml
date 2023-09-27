@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - 5432:5432
+      - ${DB_PORT}:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
@@ -38,7 +38,7 @@ services:
   api:
     image: api
     environment:
-      DATABASE_URL: postgresql://tylerbauman:password@db:5432/cocktails?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${DB_PORT}/${POSTGRES_DB}?schema=public
       NODE_ENV: development
     ports:
       - 3000:3000

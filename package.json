@@ -6,9 +6,13 @@
     "start:api": "npx nx serve api",
     "start:client": "npx nx serve client",
     "build:api": "npx nx docker-build api",
+    "prisma:start": "npx nx run prisma-client-cocktails:generate:types",
     "docker:start": "npm run build:api && docker-compose up -d",
-    "start:test": "dotenv -e .env.test -- nx run prisma-client-cocktails:migrate",
-    "api:test": "npx nx run api:test --runInBand"
+    "api:docker": "npm run prisma:start && npm run docker:start",
+    "api:test": "npx nx run api:test --runInBand",
+    "migrate:api": "dotenv -e .env -- nx run prisma-client-cocktails:migrate",
+    "migrate:tests": "dotenv -e .env.test -- nx run prisma-client-cocktails:migrate",
+    "migrate:all": "npm run migrate:api && npm run migrate:tests"
   },
   "private": true,
   "dependencies": {
