@@ -6,93 +6,21 @@ on:
       - main
   pull_request:
 
-  env:
-    NX_CLOUD_DISTRIBUTED_EXECUTION: true # this enables DTE
-    NX_CLOUD_DISTRIBUTED_EXECUTION_AGENT_COUNT: 3
-    NX_BRANCH: ${{ github.event.number || github.ref_name }}
-    NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: CI Checks
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ./package-lock.json
-
-      - uses: volta-cli/action@v4
-        with:
-          package-json-path: '${{ github.workspace }}/package.json'
-
-      - name: Use the package manager cache if available
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Initialize the Nx Cloud distributed CI run
-        run: npx nx-cloud start-ci-run --stop-agents-after="e2e"
-
-      - name: Run commands in parallel
-        run: |
-          npx nx format:check &
-          npx nx affected -t lint &
-          npx nx affected -t test &
-          npx nx affected -t e2e
-
-      - name: Upload api coverage reports to codecov
-          uses: codecov/codecov-action@v2
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            flags: api
-            files: ./coverage/apps/api/coverage-final.json
-
-      - name: Stop all running agents for this CI run
-        if: ${{ always() }}
-        run: npx nx-cloud stop-all-agents
-
-      # - name: Build Docker
-        # run: npm run docker:start
+  main:
+    name: Nx Cloud - Main Job
+    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.13.0
+    with:
+      number-of-agents: 3
+      parallel-commands: |
+        npx nx-cloud record -- npx nx format:check
+      parallel-commands-on-agents: |
+        npx nx affected -t lint --parallel=3 &
+        npx nx affected -t test --parallel=3 --configuration=ci &
+        npx nx affected -t build --parallel=3
 
   agents:
-    name: Agent ${{ matrix.agent }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        agent: [1, 2, 3]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: volta-cli/action@v4
-        with:
-          package-json-path: '${{ github.workspace }}/package.json'
-
-      - name: Use the package manager cache if available
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Start Nx Agent ${{ matrix.agent }}
-        run: npx nx-cloud start-agent
-        env:
-          NX_AGENT_NAME: ${{ matrix.agent }}
+    name: Nx Cloud - Agents
+    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.13.0
+    with:
+      number-of-agents: 3
